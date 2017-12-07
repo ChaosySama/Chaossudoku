@@ -57,7 +57,7 @@ Vue.component('cell',{
     class="sudo" \
     :style="sudoclass"> \
     <input readonly \
-    v-if="origincell!==0" \
+    v-if="origincell!=0" \
     :value="origincell"> \
     <input v-else \
     v-model="inputnum" \
@@ -67,7 +67,8 @@ Vue.component('cell',{
 })
 
 var getorigin=function(){
-	return [
+	var random=Math.floor(Math.random()*2)
+	return random==0?[
         [2,3,1,9,8,7,4,6,5],
         [5,7,9,2,6,4,8,1,3],
         [4,8,6,5,3,1,2,9,7],
@@ -77,10 +78,20 @@ var getorigin=function(){
         [6,1,5,8,2,3,9,7,4],
         [8,4,3,1,7,9,5,2,6],
         [7,9,2,6,4,5,1,0,0]
+    ]:[
+        [2,3,1,9,8,7,4,6,5],
+        [5,7,9,2,6,4,8,1,3],
+        [4,8,6,5,3,1,2,9,7],
+        [3,6,8,4,9,2,7,5,1],
+        [9,5,7,3,1,8,6,4,2],
+        [1,2,4,7,5,6,3,8,9],
+        [6,1,5,8,2,3,9,7,4],
+        [8,4,3,1,7,9,5,2,6],
+        [7,9,2,6,4,5,0,0,8]
     ]
 }
 
-new Vue({
+var vm=new Vue({
 	el:'#app',
   data:{
   	origin:getorigin()
@@ -124,8 +135,8 @@ new Vue({
       return false
     },
     checkfinish:function(){
-    	for (r=0; r<9; r++){
-      	for (c=0; c<9; c++){
+    	for (var r=0; r<9; r++){
+      	for (var c=0; c<9; c++){
         	var val=this.origin[r][c]
           if(val==0) return false
           var cellid=(r+1)*10+(c+1)
@@ -142,7 +153,23 @@ new Vue({
       return true
     },
     finish:function(){
-    	alert('conguatulations!')
+    	var newgame=confirm('conguatulations! Want a new game?')
+      if(newgame){
+      	this.origin=getorigin()
+        for (let r=0; r<9; r++){
+            for (let c=0; c<9; c++){
+              let cellid=(r+1)*10+(c+1)
+              let inputel=document.getElementById(cellid).children[0]
+              if(this.origin[r][c]==0){
+                inputel.value=''
+              }
+              if(inputel.style.color=='blue'){
+              	inputel.removeAttribute('style')
+                inputel.value=''
+              }
+            }
+          }
+      }
     },
     check:function(r,c){
     	var val=this.origin[r][c]
